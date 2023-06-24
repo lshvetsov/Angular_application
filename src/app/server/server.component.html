@@ -5,6 +5,8 @@
   <title>Title</title>
 </head>
 <body>
-<p>Server Component</p>
+<p [ngStyle]="{background: getColor()}"
+   [ngClass]="{online: isServerUp()}">
+  {{'Server'}} with {{serverId}} is {{getStatus()}}</p>
 </body>
 </html>

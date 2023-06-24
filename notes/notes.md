@@ -50,3 +50,54 @@ Selector:
 - by element (main): `name` -> `<name></name>`
 - by attribute: `[name]` -> `<div name></div>`
 - by class: `.name` -> `<div class='name'></div>`
+
+## Data binding
+
+1) Backend to user:
+   - string interpolation
+   - property binding
+2) User to Backend
+   - event binding
+3) Two-way binding
+
+### Backend to user 
+
+**String interpolation** is referencing in a html template to a variable or a method with specific syntax ```{{ ... }}```. 
+Everything that can be resolved to a string can be put into ```{{}}```, even literals. 
+
+**Property binding** is the ability to dynamically bind a property (HTML element (DOM), Directives, Components) to a particular variable or a method: ```[property]="expression"```.
+
+*String interpolation* and *Property binding* are interchangeable as we can set in property what we are going to render but don't mix them: ```[property]={{...}}``` doesn't work as angular expects TS code for property not a string interpolation. 
+
+### User to backend
+
+**Event binding** is the way how to connect events from user with actions on the server side: ```(event type)="action"```
+- event type name: onClick = click
+- angular syntax of the expression left side: ```(event type name)```
+- expression right side: actions in TS code, e.g. calling a method, changing a property etc.  
+
+List of properties nd events to bind can be googled or check them by ```console.log(element)```
+
+```$event``` is a reserved variable for passing data about a user event from browser to a backend: ```(input)="onServerNameInput($event)"```
+
+### Two-way binding
+
+To allow this form of communication we need to enable the ```ngModel```  directive by adding the ```FormsModule```  to the ```imports[]```  array in the ```AppModule```. 
+
+Property binding through attribute: ```[(ngModel)]="serverName"```, update of the element on both sides (variable serverName | html elements with this attribute) will update another one. 
+
+## Directives
+
+Instructions in the DOM. Components are basically directives. 
+- as an attribute of an HTML element | CSS class
+- as a template (component)
+
+Types:
+- structural directives - add/remove HTML elements including components, star syntax (```*ngIf ... ; else ...```, ```*ngFor```)
+- attribute directives - change the element they're placed on, no star syntax
+  - ```ngStyle``` - take a js key-value structure where a key is a css type and a value is its value (or function to define it)
+  - ```ngClass``` - take a js key-value pair where a key is a css class name (e.g. defined in the component declaration) and a value is a condition to use it. 
+
+We can use a tag ```<ng-template>``` to create a named template in the HTML code and use it as an separate HTML block.
+
+Don't mess up a directive (```ngStyle```) and binding a property of the object with the same name (```[ngStyle]="..."```).

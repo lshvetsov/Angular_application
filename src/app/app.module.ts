@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
 import {ServerComponent} from "./server/server.component";
-import {FormsModule} from "@angular/forms";
-import {HttpClientModule} from "@angular/common/http";
+import {FormsModule} from '@angular/forms';
 import {ServersComponent} from "./servers/servers.component";
 import {WarningComponent} from "./warning-alert/warning.component";
 import {SuccessComponent} from "./success-alert/success.component";
+import {UsersComponent} from "./users/users.component";
 
 @NgModule({
   declarations: [
@@ -15,12 +15,12 @@ import {SuccessComponent} from "./success-alert/success.component";
     ServerComponent,
     ServersComponent,
     WarningComponent,
-    SuccessComponent
+    SuccessComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    HttpClientModule
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

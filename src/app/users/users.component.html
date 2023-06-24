@@ -1,0 +1,19 @@
+<hr>
+<label>User name</label>
+<input type="text" class="form-control" [(ngModel)]="userName">
+<p>Current username is {{userName}}</p>
+<button class="btn btn-primary"
+        [disabled]="!allowCleanUserNameButton()"
+        (click)="onUserButtonClick()"
+>Clean user name</button>
+<hr>
+<p *ngIf="passwordEnabled">Current password is <b>{{password}}</b></p>
+<button class="btn btn-primary"
+        (click)="togglePassword()"
+>Display password</button>
+<hr>
+<p *ngFor="let date of clicks; let index = index"
+   [ngStyle]="{background: index > 4 ? 'blue' : 'white'}"
+   [ngClass]="{fifth: index > 4}"
+>Login attempt at {{date}}</p>
+
