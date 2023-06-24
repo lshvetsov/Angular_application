@@ -3,30 +3,30 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "AngularApp": {
+    "AngularLearning": {
       "projectType": "application",
       "schematics": {},
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "projects/learning/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/angular-app",
-            "index": "src/index.html",
-            "main": "src/main.ts",
+            "index": "projects/learning/src/index.html",
+            "main": "projects/learning/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "tsconfig.learning_app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/learning/src/favicon.ico",
+              "projects/learning/src/assets"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.css"
+              "projects/learning/src/styles.css"
             ],
             "scripts": []
           },
@@ -61,10 +61,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "AngularApp:build:production"
+              "browserTarget": "AngularLearning:build:production"
             },
             "development": {
-              "browserTarget": "AngularApp:build:development"
+              "browserTarget": "AngularLearning:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -72,7 +72,99 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "AngularApp:build"
+            "browserTarget": "AngularLearning:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "RecipeAndShoppingList": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "projects/recipeAndShoppingList/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/recipe-and-shopping-list",
+            "index": "projects/recipeAndShoppingList/src/index.html",
+            "main": "projects/recipeAndShoppingList/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.course_app.json",
+            "assets": [
+              "projects/recipeAndShoppingList/src/favicon.ico",
+              "projects/recipeAndShoppingList/src/assets"
+            ],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "projects/recipeAndShoppingList/src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "RecipeAndShoppingList:build:production"
+            },
+            "development": {
+              "browserTarget": "RecipeAndShoppingList:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "RecipeAndShoppingList:build"
           }
         },
         "test": {
