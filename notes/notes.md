@@ -4,7 +4,7 @@
 
 // TODO
 
-# Lesson 1 & 2 Basics
+# Sections 1, 2, 4 Basics & Debugging
 
 **Angular** is a framework which allows you to create reactive Single Page Applications (SPA) which means that you don't need to bring a new HTML page from a server for every page rendered for a user in browser.   
 
@@ -51,41 +51,6 @@ Selector:
 - by attribute: `[name]` -> `<div name></div>`
 - by class: `.name` -> `<div class='name'></div>`
 
-## Data binding
-
-1) Backend to user:
-   - string interpolation
-   - property binding
-2) User to Backend
-   - event binding
-3) Two-way binding
-
-### Backend to user 
-
-**String interpolation** is referencing in a html template to a variable or a method with specific syntax ```{{ ... }}```. 
-Everything that can be resolved to a string can be put into ```{{}}```, even literals. 
-
-**Property binding** is the ability to dynamically bind a property (HTML element (DOM), Directives, Components) to a particular variable or a method: ```[property]="expression"```.
-
-*String interpolation* and *Property binding* are interchangeable as we can set in property what we are going to render but don't mix them: ```[property]={{...}}``` doesn't work as angular expects TS code for property not a string interpolation. 
-
-### User to backend
-
-**Event binding** is the way how to connect events from user with actions on the server side: ```(event type)="action"```
-- event type name: onClick = click
-- angular syntax of the expression left side: ```(event type name)```
-- expression right side: actions in TS code, e.g. calling a method, changing a property etc.  
-
-List of properties nd events to bind can be googled or check them by ```console.log(element)```
-
-```$event``` is a reserved variable for passing data about a user event from browser to a backend: ```(input)="onServerNameInput($event)"```
-
-### Two-way binding
-
-To allow this form of communication we need to enable the ```ngModel```  directive by adding the ```FormsModule```  to the ```imports[]```  array in the ```AppModule```. 
-
-Property binding through attribute: ```[(ngModel)]="serverName"```, update of the element on both sides (variable serverName | html elements with this attribute) will update another one. 
-
 ## Directives
 
 Instructions in the DOM. Components are basically directives. 
@@ -101,3 +66,89 @@ Types:
 We can use a tag ```<ng-template>``` to create a named template in the HTML code and use it as an separate HTML block.
 
 Don't mess up a directive (```ngStyle```) and binding a property of the object with the same name (```[ngStyle]="..."```).
+
+# Section 5 Components & Data binding
+
+## Data binding
+
+**Areas**
+1. HTML (Native properties & events)
+2. Directives (Custom properties & events)
+3. Components (Custom properties & events)
+
+**Types**
+1. string interpolation
+2. property binding
+3. event binding
+
+### String interpolation & property binding 
+
+Component -> HTML
+
+**String interpolation** is referencing in a html template to a variable or a method with specific syntax ```{{ ... }}```.
+Everything that can be resolved to a string can be put into ```{{}}```, even literals.
+
+**Property binding** is the ability to dynamically bind a property (HTML element (DOM), Directives, Components) to a particular variable or a method: ```[property]="expression"```.
+
+*String interpolation* and *Property binding* are interchangeable as we can set in property what we are going to render but don't mix them: ```[property]={{...}}``` doesn't work as angular expects TS code for property not a string interpolation.
+
+### Events
+
+HTML -> Component
+
+**Event binding** is the way how to connect events from user with actions on the server side: ```(event type)="action"```
+- event type name: onClick = click
+- angular syntax of the expression left side: ```(event type name)```
+- expression right side: actions in TS code, e.g. calling a method, changing a property etc.
+
+List of properties nd events to bind can be googled or check them by ```console.log(element)```
+
+```$event``` is a reserved variable for passing data about a user event from browser to a backend: ```(input)="onServerNameInput($event)"```
+
+### Two-way binding
+
+To allow this form of communication we need to enable the ```ngModel```  directive by adding the ```FormsModule```  to the ```imports[]```  array in the ```AppModule```.
+
+Property binding through attribute: ```[(ngModel)]="serverName"```, update of the element on both sides (variable serverName | html elements with this attribute) will update another one.
+
+### Communication between components
+
+**```@Input('alias')```** allows to expose the property of the current component to another component  
+
+**Data flow**: HTML -> Component
+```html
+<current-component *ngFor="let serverElement of serverElements" 
+                    [server]="serverElement"></current-component>
+<!-- server is an alias of the property of the CurrentComponent -->
+```
+
+**```Output()```**  allows to send events from one component to another one.  
+
+**Data flow**: Component -> Component:
+- catch a change at one component (call from an HTML element)
+- emit a custom event (```EventEmitter```)
+- catch this custom event on another element (where the first element is placed)
+```html
+<child-element
+    (customEvent)="eventHandler($event)"
+  ></child-element>
+```
+- handle this event in a parent component
+
+##  View encapsulation
+
+**CSS** styles are applied only to the component they are defined. It's achieved by tagging HTML elements of the component with a specific tag.   
+This is regulated by the property ```encapsulation``` of the ```@Component```:
+- Emulated - default
+- None - css styles of this element defined globally
+- ShadowDom - equals to Emulated in browsers that supports this technology 
+
+## Local references 
+
+Local reference is a reference in a HTML template (```#name```) which can be set to an element and allows to reference this element everywhere in this HTML document. 
+It's also allowed to pass this reference (element) to a component TS code.  
+```html
+<input type="text" class="form-control" #serverName>
+...
+(click)="onAddServer(serverName)">Add Server</button>
+```

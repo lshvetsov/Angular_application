@@ -82,13 +82,14 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "tsconfig.learning_app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/learning/src/favicon.ico",
+              "projects/learning/src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "projects/learning/src/styles.css"
             ],
             "scripts": []
           }
@@ -174,13 +175,14 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "tsconfig.course_app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/recipeAndShoppingList/src/favicon.ico",
+              "projects/recipeAndShoppingList/src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "projects/recipeAndShoppingList/src/styles.css"
             ],
             "scripts": []
           }
