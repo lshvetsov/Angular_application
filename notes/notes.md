@@ -135,20 +135,51 @@ Property binding through attribute: ```[(ngModel)]="serverName"```, update of th
 ```
 - handle this event in a parent component
 
+### Local references 
+
+Local reference is a reference in a HTML template (```#name```) which can be set to an element and allows to reference this element everywhere in this HTML document. 
+
+*References* can be:
+- passed to a component TS code.  
+    ```html
+    <input type="text" class="form-control" #serverName>
+    ...
+    (click)="onAddServer(serverName)">Add Server</button>
+    ```
+- accessed through ```@ViewChild``` (two-way binding, but it's a bad practice to change DOM that way) || ```@ContentChild``` (for ```ngContent```)
+  ```typescript
+    @ViewChild('name', {static:true}) serverContentElementRef: ElementRef;
+  ```
+  
 ##  View encapsulation
 
 **CSS** styles are applied only to the component they are defined. It's achieved by tagging HTML elements of the component with a specific tag.   
 This is regulated by the property ```encapsulation``` of the ```@Component```:
 - Emulated - default
 - None - css styles of this element defined globally
-- ShadowDom - equals to Emulated in browsers that supports this technology 
+- ShadowDom - equals to Emulated in browsers that supports this technology
 
-## Local references 
+## Projecting content into a component
 
-Local reference is a reference in a HTML template (```#name```) which can be set to an element and allows to reference this element everywhere in this HTML document. 
-It's also allowed to pass this reference (element) to a component TS code.  
+Add the directive ```<ng-content>``` into a component to allow processing of the HTML content that is passed to the usage of this component. 
 ```html
-<input type="text" class="form-control" #serverName>
-...
-(click)="onAddServer(serverName)">Add Server</button>
+<component *ngFor="let serverElement of serverElements" [server]="serverElement">
+<!--  content that will be processed with the directive <ng-content>  -->
+  <p>
+    <strong *ngIf="serverElement.type === 'server'" style="color: red">{{ serverElement.content }}</strong>
+    <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
+  </p>
+</component>
 ```
+
+## Component lifecycle
+
+Hooks:
+- *ngOnChanges* - any changes to ```@Input``` properties
+- *ngOnInit* - component initialization
+- *ngDoCheck* - any change detection run (extremely often, any actions on the page or in the component)
+- *ngAfterContentInit* - any content inside a component (```ng-init```) initialized
+- *ngAfterContentCheck* - content inside a component checked (each change detection cycle, after *ngDoCheck*)
+- *ngAfterViewInit* - after a component view (including child views) has been initialized 
+- *ngAfterViewChecked* - every time a component view (including child views) has been checked (each change detection cycle, after *ngDoCheck*)
+- *ngOnDestroy* - once a component is about to destroy 

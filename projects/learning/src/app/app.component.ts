@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +8,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'AngularApp'
   serverElements = [{type: 'server', name: 'test server', content: 'test it!'}];
+  currentNumber: number = 0;
 
   onServerCreated(event: {name: string, content: string}) {
     this.serverElements.push({
@@ -25,6 +26,11 @@ export class AppComponent {
         content: event.content
       }
     )
+  }
+
+  onNumberEmitted(event: number) {
+    console.log(event);
+    this.currentNumber = event;
   }
 
 

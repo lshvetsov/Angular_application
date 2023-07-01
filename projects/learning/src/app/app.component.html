@@ -7,7 +7,27 @@
   <div class="row">
     <div class="col-xs-12">
       <app-server-element *ngFor="let serverElement of serverElements"
-      [server]="serverElement"></app-server-element>
+      [server]="serverElement">
+        <p>
+          <strong *ngIf="serverElement.type === 'server'" style="color: red">{{ serverElement.content }}</strong>
+          <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
+        </p>
+      </app-server-element>
+    </div>
+  </div>
+  <hr>
+  <app-game-control
+    (numberEmitted)="onNumberEmitted($event)">
+  </app-game-control>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel-body">
+        <app-even *ngIf="currentNumber % 2 === 0 && currentNumber !== 0"
+        [evenNumber]="currentNumber"></app-even>
+        <app-odd *ngIf="currentNumber % 2 !== 0"
+        [oddNumber]="currentNumber"></app-odd>
+      </div>
     </div>
   </div>
 </div>
