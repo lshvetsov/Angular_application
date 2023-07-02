@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'RecipeAndShoppingList';
+  currentPanel: string = 'recipe';
+
+  switchComponent(event: string) {
+    this.currentPanel = event;
+  }
+
 }
