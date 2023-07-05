@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,32 +6,8 @@ import {Component} from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'AngularApp'
-  serverElements = [{type: 'server', name: 'test server', content: 'test it!'}];
-  currentNumber: number = 0;
-
-  onServerCreated(event: {name: string, content: string}) {
-    this.serverElements.push({
-        type: 'server',
-        name: event.name,
-        content: event.content
-      }
-    )
-  }
-
-  onBlueprintCreated(event: {type: string, name: string, content: string}) {
-    this.serverElements.push({
-        type: 'blueprint',
-        name: event.name,
-        content: event.content
-      }
-    )
-  }
-
-  onNumberEmitted(event: number) {
-    console.log(event);
-    this.currentNumber = event;
-  }
-
-
+  numbers = [1, 2, 3, 4, 5];
+  odd = [1, 3, 5];
+  even = [2, 4];
+  onlyOdd = false;
 }

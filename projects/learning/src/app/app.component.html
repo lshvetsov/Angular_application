@@ -1,33 +1,31 @@
 <div class="container">
-  <app-cockpit
-    (serverCreated)="onServerCreated($event)"
-    (blueprintCreated)="onBlueprintCreated($event)"
-  ></app-cockpit>
-  <hr>
   <div class="row">
     <div class="col-xs-12">
-      <app-server-element *ngFor="let serverElement of serverElements"
-      [server]="serverElement">
-        <p>
-          <strong *ngIf="serverElement.type === 'server'" style="color: red">{{ serverElement.content }}</strong>
-          <em *ngIf="serverElement.type === 'blueprint'">{{ serverElement.content }}</em>
-        </p>
-      </app-server-element>
-    </div>
-  </div>
-  <hr>
-  <app-game-control
-    (numberEmitted)="onNumberEmitted($event)">
-  </app-game-control>
-  <hr>
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="panel-body">
-        <app-even *ngIf="currentNumber % 2 === 0 && currentNumber !== 0"
-        [evenNumber]="currentNumber"></app-even>
-        <app-odd *ngIf="currentNumber % 2 !== 0"
-        [oddNumber]="currentNumber"></app-odd>
-      </div>
+      <button
+        class="btn btn-primary"
+        (click)="onlyOdd = !onlyOdd">Only show odd numbers</button>
+      <br><br>
+      <ul class="list-group">
+        <div *ngIf="onlyOdd">
+          <li
+            class="list-group-item"
+            *ngFor="let number of odd">
+            {{number}}
+          </li>
+        </div>
+        <div *appUnless="onlyOdd">
+          <li
+            class="list-group-item"
+            *ngFor="let number of even">
+            {{number}}
+          </li>
+        </div>
+      </ul>
+      <ng-template [ngIf]="onlyOdd">
+        <p>Only odd</p>
+      </ng-template>
+      <p basicHighlight>This is a highlighted text</p>
+      <p betterHighlight [defaultColor]="'yellow'" [highlightColor]="'purple'">This is a better highlighted text</p>
     </div>
   </div>
 </div>

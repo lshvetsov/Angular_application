@@ -9,6 +9,6 @@ import {Recipe} from "../recipe.model";
 export class RecipeDetailComponent {
 
   //@ts-ignore
-  @Input() public recipeDetailed: Recipe;
+  @Input() public recipeDetailed: Recipe
 
 }

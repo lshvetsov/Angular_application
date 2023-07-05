@@ -7,6 +7,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 })
 export class HeaderComponent {
   @Output() componentSwitch = new EventEmitter<string>();
+  dropdownOpen: boolean = false;
 
   onComponentSwitch(recipeShown: string) {
     this.componentSwitch.emit(recipeShown);

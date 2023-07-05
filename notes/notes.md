@@ -51,22 +51,6 @@ Selector:
 - by attribute: `[name]` -> `<div name></div>`
 - by class: `.name` -> `<div class='name'></div>`
 
-## Directives
-
-Instructions in the DOM. Components are basically directives. 
-- as an attribute of an HTML element | CSS class
-- as a template (component)
-
-Types:
-- structural directives - add/remove HTML elements including components, star syntax (```*ngIf ... ; else ...```, ```*ngFor```)
-- attribute directives - change the element they're placed on, no star syntax
-  - ```ngStyle``` - take a js key-value structure where a key is a css type and a value is its value (or function to define it)
-  - ```ngClass``` - take a js key-value pair where a key is a css class name (e.g. defined in the component declaration) and a value is a condition to use it. 
-
-We can use a tag ```<ng-template>``` to create a named template in the HTML code and use it as an separate HTML block.
-
-Don't mess up a directive (```ngStyle```) and binding a property of the object with the same name (```[ngStyle]="..."```).
-
 # Section 5 Components & Data binding
 
 ## Data binding
@@ -183,3 +167,115 @@ Hooks:
 - *ngAfterViewInit* - after a component view (including child views) has been initialized 
 - *ngAfterViewChecked* - every time a component view (including child views) has been checked (each change detection cycle, after *ngDoCheck*)
 - *ngOnDestroy* - once a component is about to destroy 
+
+# Section 7 Directives
+
+**Directives** are instructions in the DOM. Components are basically directives.
+- as an attribute of an HTML element | CSS class
+- as a template (component)
+
+Types:
+- structural directives - add/remove HTML elements including components, star syntax (```*ngIf ... ; else ...```, ```*ngFor```, ```ngSwitch```)
+- attribute directives - change the element they're placed on, no star syntax
+  - ```ngStyle``` - take a js key-value structure where a key is a css type and a value is its value (or function to define it)
+  - ```ngClass``` - take a js key-value pair where a key is a css class name (e.g. defined in the component declaration) and a value is a condition to use it.
+
+We can use a tag ```<ng-template>``` to create a named template in the HTML code and use it as a separate HTML block.
+
+Don't mess up a directive (```ngStyle```) and binding a property of the object with the same name (```[ngStyle]="..."```).
+
+No more than 1 structural directive are available for a component. 
+
+## How to create your own directive?
+
+1. Create a ts file (name.directive.ts) and declare class with ```@Directive``` here. 
+2. Pass the element and other required classes to a constructor. 
+3. Add some logic to this class using a link to the HTML element directly or the render.  
+4. Register the element in ```app.module.ts```
+5. Apply it in an HTML template
+
+**How to pass element through a constructor?**
+
+1) parameter of a type: ```ElementRef```
+2) parameters of types: ```ElementRef```, ```Renderer2```,
+3) ```@HostBinding(attribute name)``` to bind a component class variable to an HTML element property.
+
+- In the first approach we change the DOM directly which is worse because in some cases the DOM may be not available. 
+- In the second approach, we use ```Renderer``` for custom rendering: by default, Angular renders a template into DOM,  but with ```Renderer``` we can intercept rendering calls, or to render to something other than DOM.
+- the third approach: 
+  ```typescript
+  @HostBinding('style.background') backgroundColor: string = 'transparent'
+  ```
+
+**What kind of logic we can implement in a directive?**
+
+We can listen to events from the HTML page with ```@HostListener('name')```. 
+It applies to a method to listen to events and takes an event as a method parameter. It's possible to react on regular and custom events.
+
+**How to apply the directive in an HTML template?**
+
+Use ```selector``` which is an attribute of the ```@Directive``` to declare how to reference to it in a template.
+Name it as *`[name]`* to reference as to an attribute of an HTML-element.
+
+**Example**
+```typescript
+import {Directive, ElementRef, HostBinding, HostListener, Input, OnInit, Renderer2} from "@angular/core";
+import {Event} from "@angular/router";
+
+@Directive({
+  selector: '[betterHighlight]'
+})
+export class BetterHighlightDirective implements OnInit {
+
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
+
+  @HostListener('mouseenter') mouseEnter(event: Event) {
+    this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'blue');
+
+  }
+
+  @HostListener('mouseleave') mouseLeave(event: Event) {
+    this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'transparent');
+  }
+
+}
+```
+
+## How to create a structural directive?
+
+Structural directive syntax (```*directive```) in a HTML module is transformed into ```<ng-content [directive]="logic"></ng-content>```.
+
+1. Add a regular directive (like in the chapter above)
+2. Pass 2 parameters into the constructor: 
+   - what to render: type ```TemplateRef<any>```
+   - where to render: type ```ViewContainerRef```
+3. Declare the ```@Input()``` variable with the name equal to the selector and add the setter for it 
+4. Based in the value of this variable implement some logic on the inbound HTML components (constructor)
+
+**Example**
+```typescript
+@Directive({
+  selector: '[appUnless]'
+})
+export class UnlessDirective {
+
+  @Input() set appUnless(condition: boolean) {
+
+    if (!condition) {
+      this.vcRef.createEmbeddedView(this.templateRef)
+    } else {
+      this.vcRef.clear();
+    }
+  }
+  constructor(private templateRef: TemplateRef<any>, private vcRef: ViewContainerRef) {}
+}
+```
+
+## Using ngSwitch
+
+- declare a value (```[ngSwitch]="value"```) ina high-level HTML block through property binding with a variable in the component 
+- declare cases with ```*ngSwitchCase``` and ```*ngSwitchDefault``` in the blocks which we need alternatively to render. 
+
+# Section 8 Services & Dependency injection 
+
+

@@ -1,27 +1,23 @@
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
-import {AppComponent} from './app.component';
-import {FormsModule} from '@angular/forms';
-import {CockpitComponent} from "./components/cockpit/cockpit.component";
-import {ServerElementComponent} from "./components/server-element/server-element.component";
-import {GameControlComponent} from "./components/assignment/game-control/game-control.component";
-import {OddComponent} from "./components/assignment/odd/odd.component";
-import {EvenComponent} from "./components/assignment/even/even.component";
 
+import { AppComponent } from './app.component';
+import {BetterHighlightDirective} from "./directives/custom-directives/better-highlight.directive";
+import {BasicHighlightDirective} from "./directives/custom-directives/basic-highlight.directive";
+import {UnlessDirective} from "./directives/custom-directives/unless.directive";
 
 @NgModule({
   declarations: [
     AppComponent,
-    CockpitComponent,
-    ServerElementComponent,
-    GameControlComponent,
-    OddComponent,
-    EvenComponent
+    BetterHighlightDirective,
+    BasicHighlightDirective,
+    UnlessDirective
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
