@@ -3,11 +3,11 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent} from './app.component';
 import {FormsModule} from '@angular/forms';
-import {CockpitComponent} from "./components/cockpit/cockpit.component";
-import {ServerElementComponent} from "./components/server-element/server-element.component";
-import {GameControlComponent} from "./components/assignment/game-control/game-control.component";
-import {OddComponent} from "./components/assignment/odd/odd.component";
-import {EvenComponent} from "./components/assignment/even/even.component";
+import {CockpitComponent} from "./cockpit/cockpit.component";
+import {ServerElementComponent} from "./server-element/server-element.component";
+import {GameControlComponent} from "./assignment/game-control/game-control.component";
+import {OddComponent} from "./assignment/odd/odd.component";
+import {EvenComponent} from "./assignment/even/even.component";
 
 
 @NgModule({

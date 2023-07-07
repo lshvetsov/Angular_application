@@ -1,13 +1,27 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AccountsService} from "./services/services/accounts.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: []
 })
-export class AppComponent {
-  numbers = [1, 2, 3, 4, 5];
-  odd = [1, 3, 5];
-  even = [2, 4];
-  onlyOdd = false;
+export class AppComponent implements OnInit {
+
+  accounts: {name: string, status: string}[] = [];
+
+  constructor(private accountService: AccountsService) {}
+
+  onAccountAdded(newAccount: {name: string, status: string}) {
+    this.accountService.addAccount(newAccount);
+  }
+
+  onStatusChanged(updateInfo: {id: number, newStatus: string}) {
+    this.accountService.updateStatus(updateInfo);
+  }
+  ngOnInit(): void {
+    this.accounts = this.accountService.accounts;
+  }
+
 }

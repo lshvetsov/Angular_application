@@ -278,4 +278,38 @@ export class UnlessDirective {
 
 # Section 8 Services & Dependency injection 
 
+**Service** - a code unit to reduce code duplication and centralize some functions. 
+
+1) Create an ordinary ts class (naming convention - ```name.service.ts```, class name - ```NameService```)
+2) Add the ```providers``` block in the Component declaration where we use the service and add the service here. 
+3) Add a variable and set it in a constructor (or use ts shortcut declaring the variable in a constructor)
+4) Use the service through the variable. 
+
+Services are injected by **Angular Injector**.
+
+### Injection hierarchy
+Angular injector use **hierarchical approach**: it injects the same service to all subcomponents of the one where we declare it (in ```providers```).
+But this behaviour can be overridden (new instance of the service is injected) if we declare the service again below in the component hierarchy.  
+Hierarchy:
+1) AppModule (one service instance for the whole application)
+2) AppComponent (one service instance for the main component and all child components, but not for other services)
+3) Particular component
+
+### Service-to-service injection
+
+Two approaches:
+1) Root declaration:
+   - declare all services at the top level (AppModule)
+   - add ```@Injectable``` for the service you want to inject in
+   - pass the injecting service into the constructor of the service you are going to inject
+2) Lazy loading (Angular 6+):
+  - mark all services with ```@Injectable```
+  - add ```@Injectable({providedIn: 'root'})``` to the service you want to inject in (an equivalent of declaring at AppModule)
+
+### Cross component communication using services
+
+1) Declare ```Emitter``` on the service level
+2) call this emitter from the component that emits an event 
+3) subscribe for this event in the component processing this event
+
 
