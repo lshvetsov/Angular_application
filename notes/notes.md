@@ -276,7 +276,7 @@ export class UnlessDirective {
 - declare a value (```[ngSwitch]="value"```) ina high-level HTML block through property binding with a variable in the component 
 - declare cases with ```*ngSwitchCase``` and ```*ngSwitchDefault``` in the blocks which we need alternatively to render. 
 
-# Section 8 Services & Dependency injection 
+# Section 8-10 Services & Dependency injection 
 
 **Service** - a code unit to reduce code duplication and centralize some functions. 
 
@@ -312,4 +312,143 @@ Two approaches:
 2) call this emitter from the component that emits an event 
 3) subscribe for this event in the component processing this event
 
+# Section 11-12 Routing
 
+Routing allow SPA to look like multiple page application that's mean to have several URL for its parts (but it still has just one page).
+
+## To set up routes
+
+1. Add a constant with a list of routes (type ```Routes```: paths + components) to ```app.module.ts``` (with attributes).
+2. Add a ```RouterModule``` to the *import* section and register routes with the ```forRoot()``` method
+3. Replace current component occurrence with ```<router-outlet>```
+
+**Alternative**: to set up routes in different module and import it to the ```app.module.ts``` as pre-configured element (imports). 
+It makes code structure cleaner. 
+```typescript
+@NgModule({
+  imports: [RouterModule.forRoot(appRoutes)],
+  exports: [RouterModule]
+  })
+export class AppRoutingModule {}
+```
+
+## Path types
+
+Paths can be:
+1) *absolute* (```/servers```).
+2) *relative* (```servers```).
+It's always in the context of the module where it's used: it may serve as an absolute path at the root component, or append to the current path if it's used in the subcomponents.
+3) *relative with shifting* (```../servers```).
+It eliminates one or more parts of the path. 
+
+## Navigation with routes
+
+### RouterLink 
+
+**Wrong way** - to set the ```href``` attribute to a route (each click on the element the whole app is reloaded) 
+**Right ways**
+- to set the ```routerLink``` attribute to a router path 
+- to bind ```[routerLink]``` property to an array of routes: ```[routerLink]="['/users']"```
+
+To set an HTML-element active based in the router path (*styling links*):
+- add ```routerLinkActive="css class"``` to the required element 
+- set options if it needs: ```[routerLinkActiveOptions]="{exact: true}"``` (e.g. to mark only one element, duplication of the root ```/```). 
+
+### Router object 
+
+**Programmatic navigation** is a navigation from ts-code is made through the constructor injection of ```Router```. 
+By default, Router doesn't know about the current component path and resolve the given path from the root but this behavior can be changed by adding the second parameter ({options}).
+This default behavior is opposite to the default logic of ```routerLink``` (where, by default, we resolve the relative path to the current component). 
+```typescript
+    this.router.navigate(['/servers'], {relativeTo: path});
+```
+
+### Child routes
+if we have some routes with the same base path, we can combine them into *group of routes* (main route + nested routes).
+Don't forget to remove duplicates in paths: */servers/:id -> :id*
+```typescript
+    // app.module.ts Routes
+    {path: 'servers', component: ServersComponent, children: [
+      {path: ':id', component: ServerComponent},
+      {path: ':id/edit', component: EditServerComponent}
+    ]}
+```
+With that in place, we also need to replace usages of the components in the nested paths with ```<router-outlet>``` to allow router to load them. 
+
+### Redirection & Wildcards
+
+**Redirection** - sending a user from one URL to another one, defined in the route declaration (```app.module.ts```) instead of a linked component. 
+```typescript
+
+```
+**Use-case**: redirect users from any URL that is not declared to a default one. 
+Solution: use a wildcard "**" but pay attention that this route must be the last one as the routes are matched consequently. 
+```typescript
+{path: 'not-found', component: NotFoundComponent},
+{path: '**', redirectTo: '/not-found'}
+```
+
+**Default strategy** "prefix" matches routes from the beginning which may lead to confusion so in some cases it's reasonable to change it to "full" for exact matching. 
+
+## Params
+
+### Path params
+
+1) Declare params in the path declaration (```app.module.ts```): ```{path: 'user/:id/:name', component: UserComponent}```
+2) Access them through an ```ActivatedRoute``` object passed as a parameter to a component. 
+On init, get access to a current state of the active route (snapshot) (```activeRoute.snapshot.params['name']```) to get a list of parameters.
+3) If parameters can be dynamically changed with an action within the component 9from the page you currently on), use an observable on parameter list:
+```typescript
+this.route.params.subscribe(
+      (params: Params) => {
+        this.user.id = params['id'];
+        this.user.name = params['name'];
+      }
+    )
+```
+
+### Query params & fragments
+
+1) Access through the same object ```ActivatedRoute``` object passed as a parameter to a component. 
+2) Passing through:
+   - ```[routerLink]``` - extra parameters ```[queryParams]``` and ```fragment```
+   - programmatically: extra parameters of ```route.navigate()```:
+   ```typescript
+    this.router.navigate(['/servers', 5, 'edit'], {queryParams: {allowEdit: '1'}});
+   ```
+
+## Guards
+
+**Guards** are services that can be used to perform some checks before showing the component (CanActivate, CanActivateChild) or before discard it (CanDeactivate) to decide whether to show/close the component or not. 
+
+**Implementation** 
+- regular service implementing pertinent interfaces (don't forget to add to ```app.module.ts```)
+- add to routes with parameter: 
+  - canActivate - if we want to make some check before rendering the component
+  - canActivateChild - if we want to make some before showing components on child routes. 
+  - canDeactivate - if we want to make some checks before we leave the component
+```typescript
+const appRoutes: Routes = [
+  {path: 'servers', canActivateChild: [AuthGuard], component: ServersComponent, children: [
+      {path: ':id', component: ServerComponent},
+      {path: ':id/edit', canDeactivate: [CanDeactivateGuardService], component: EditServerComponent}
+    ]}
+]
+```
+
+## Static and dynamic data to routes
+
+**Static data** - add a property data to the route declaration (```{name}:data```) and address this data by the *name* in the component. 
+```typescript
+{path: 'not-found', component: ErrorComponent, data: {message: "Page not found"}},
+```
+
+**Dynamic data**: 
+- declare a resolver (service implementing XXX)
+- register resolver to the route declaration: ```XXX```
+- resolver will fetch data and put them into the variable with the given name.   
+Using Resolver is pretty similar with using onInit() but with one difference that in case of the Resolver data is uploaded BEFORE the component initialization. 
+
+## Other
+
+**Problem with routes in old servers** -> turn on **Hash mode** so that a server knows that it should manage only URL before hash and a client (Angular) should use the path after: ```https://some_path_for_server/#/some_path_for_client```
