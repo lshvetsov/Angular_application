@@ -452,3 +452,28 @@ Using Resolver is pretty similar with using onInit() but with one difference tha
 ## Other
 
 **Problem with routes in old servers** -> turn on **Hash mode** so that a server knows that it should manage only URL before hash and a client (Angular) should use the path after: ```https://some_path_for_server/#/some_path_for_client```
+
+# Section 13-14 Observable
+
+Consists of:
+- *observable* - data source emitting events
+- *observer* - event handler that is *subscribed* to the observable (through *subscription*)
+- *events* - regular, error, completion 
+
+1) Each subscription (```observer.subscribe()```) must be stored (e.g. in variable) because otherwise each method call will produce a new subscription (old ones haven't closed) which can lead to a memory leak. 
+2) Each subscription (unless it's endless) should be closed (```subscription.unsubscribe()```). If *observable* is implemented by Angular, it does closing for you. 
+3) *Custom observable*:
+   - package ```rxjs```
+   - ```interval(number)``` - a build-in function that emit events (numbers) per interval (input parameter)
+   - ```Observable.create(observer)``` - create an observable with some logic sending events through ```observer.next(event)```, ```observer.error(new Error())``` and ```observer.complete()```.
+   - *Complete* stops observable, *Error* stops observable skipping completion.  
+
+**Operators** - intermediate operators to process data before observer consume it, like Stream operations in Java. Useful when Observable is out of your control.
+From package ```rxjs/operators```
+```typescript
+this. subscription = observable.pipe(operator1, operator2 ...).subscribe(eventHandler, errorHandler, completionHandler)
+```
+
+**Subject** - replacement for *EventEmitter* in case if we subscribe to it. 
+It works the same way as a regular Subscription (Observable) but in more "active" way as we emit new events programmatically ```subscription.next()```. 
+
