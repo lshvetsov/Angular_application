@@ -2,7 +2,13 @@
 
 # Table of content 
 
-// TODO
+[1. Basics](#sections-1-2-4-basics--debugging)
+[2. Components & Data Binding](#section-5-components--data-binding)
+[3. Directives](#section-7-directives)
+[4. Services](#section-8-10-services--dependency-injection)
+[5. Routing](#section-11-12-routing)
+[6. Observables](#section-13-14-observable)
+[7. Form Handling](#section-15-16-form-handling)
 
 # Sections 1, 2, 4 Basics & Debugging
 
@@ -465,7 +471,7 @@ Consists of:
 3) *Custom observable*:
    - package ```rxjs```
    - ```interval(number)``` - a build-in function that emit events (numbers) per interval (input parameter)
-   - ```Observable.create(observer)``` - create an observable with some logic sending events through ```observer.next(event)```, ```observer.error(new Error())``` and ```observer.complete()```.
+   - ```Observable.create(observer) | new Observable(observer => {...})``` - create an observable with some logic sending events through ```observer.next(event)```, ```observer.error(new Error())``` and ```observer.complete()```.
    - *Complete* stops observable, *Error* stops observable skipping completion.  
 
 **Operators** - intermediate operators to process data before observer consume it, like Stream operations in Java. Useful when Observable is out of your control.
@@ -476,4 +482,55 @@ this. subscription = observable.pipe(operator1, operator2 ...).subscribe(eventHa
 
 **Subject** - replacement for *EventEmitter* in case if we subscribe to it. 
 It works the same way as a regular Subscription (Observable) but in more "active" way as we emit new events programmatically ```subscription.next()```. 
+
+# Section 15-16 Form handling
+
+Two approaches:
+- Template-driven (Angular infers a Form Object from DOM)
+- Reactive (Form is created programmatically and synchronized with DOM)
+
+## Template-driven approach (TDA)
+
+Main functionality - ```FormsModule``` imported to ```app.module.ts```. Angular recognize form by the tag ```<form>``` (selector). 
+
+1) we need to mark controls in the html-template: ```ngModel``` directive and html-attribute ```<name>```
+2) we need to add a method to process submitting and tie it with the ```<form>``` by processing ```(ngSubmit)```
+3) we need to pass an element to TS-component:
+   - through passing an object of type ```NgForm``` into the created method with a html-element reference: 
+  ```html
+    <form (ngSubmit)="onSubmit(f) #f="ngForm"></form>
+  ```
+  - though ```@ViewChild``` binding
+  ```typescript
+    @ViewChild('form') signupForm: NgForm;
+  ```
+
+**NgModel attributes**
+- touched - user has clicked on it
+- dirty - user has changed a value
+- valid - value has passed validation
+
+**Form binding** - how the HTML form is connected to a TS-component
+- no binding - get data only by submitting a form 
+- one-way binding - get default data from a TS-component
+- two-way binding - get a default + online update a variable based on used input. 
+
+## Form validation
+
+*Build-in validators* (Angular directives)
+- TDA, all directives and validators are among them [https://angular.io/api?type=directive]
+- Reactive: [https://angular.io/api/forms/Validators]
+
+Angular add custom CSS classes to mark html-elements, and they can be used for binding CSS settings. 
+```css
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+```
+
+## Other features
+
+1) *Combining input values into groups* within the NgModel object(value) by marking html objects (```div```) with ```ngModelGroup="name"```.
+2) *Populating input* from a TS component: ```NgForm.setValue()```(update the whole form) or ```NgForm.form.patchValue()```(update a specific fiend), pass a JSON representing a form structure into these methods. 
+
 
