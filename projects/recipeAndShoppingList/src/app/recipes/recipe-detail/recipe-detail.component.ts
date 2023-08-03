@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Recipe} from "../../shared/recipe.model";
 import {RecipeService} from "../../shared/services/recipe.service";
-import {ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 
 @Component({
   selector: 'app-recipe-detail',
@@ -11,20 +11,24 @@ import {ActivatedRoute, Params} from "@angular/router";
 export class RecipeDetailComponent implements OnInit {
 
   // @ts-ignore
-  public recipeDetailed: Recipe
+  public recipeDetailed: Recipe;
+  id: number;
 
-  constructor(private recipeService: RecipeService, private route: ActivatedRoute) {}
+  constructor(private recipeService: RecipeService, private route: ActivatedRoute, private router: Router) {}
 
-  onIngredientsAdd() {
-    this.recipeService.addIngredients(this.recipeDetailed.ingredients);
+  onAddToShoppingList() {
+    this.recipeService.addIngredientsToShoppingList(this.recipeDetailed.ingredients);
+  }
+
+  onDeleteRecipe() {
+    this.recipeService.deleteRecipe(this.recipeDetailed.id);
+    this.router.navigate(['../'], {relativeTo: this.route});
   }
 
   ngOnInit() {
-    const id = +this.route.snapshot.params['id'];
-    this.recipeDetailed = this.recipeService.getRecipe(id);
-
     this.route.params.subscribe((params: Params) => {
-      this.recipeDetailed = this.recipeService.getRecipe(+params['id']);
+      this.id = +params['id'];
+      this.recipeDetailed = this.recipeService.getRecipe(this.id);
     })
   }
 

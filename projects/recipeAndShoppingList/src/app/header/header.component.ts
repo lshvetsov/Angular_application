@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {RecipeService} from "../shared/services/recipe.service";
 
 @Component({
   selector: 'app-header',
@@ -7,5 +8,14 @@ import {Component} from '@angular/core';
 })
 export class HeaderComponent {
   dropdownOpen: boolean = false;
+
+  constructor(private recipeService: RecipeService) {
+  }
+  onSave(){
+    this.recipeService.saveRecipes();
+  }
+  onFetch(){
+    this.recipeService.fetchRecipes().subscribe();
+  }
 
 }

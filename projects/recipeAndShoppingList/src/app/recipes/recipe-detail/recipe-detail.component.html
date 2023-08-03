@@ -7,9 +7,9 @@
       <button type="button" class="btn btn-primary dropdown-toggle">
         Manage recipe<span class="caret"></span> </button>
       <ul class="dropdown-menu">
-        <li><a style="cursor: pointer" (click)="onIngredientsAdd()">To Shopping list</a> </li>
+        <li><a style="cursor: pointer" (click)="onAddToShoppingList()">To Shopping list</a> </li>
         <li><a style="cursor: pointer" routerLink="edit" routerLinkActive="active">Edit recipe</a> </li>
-        <li><a style="cursor: pointer">Delete recipe</a> </li>
+        <li><a style="cursor: pointer" (click)="onDeleteRecipe()">Delete recipe</a> </li>
       </ul>
     </div>
   </div>

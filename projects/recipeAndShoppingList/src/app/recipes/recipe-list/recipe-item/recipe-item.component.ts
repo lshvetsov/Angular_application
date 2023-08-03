@@ -10,5 +10,7 @@ export class RecipeItemComponent {
 
   //@ts-ignore
   @Input() recipe: Recipe;
+  @Input() index: number;
+
 
 }

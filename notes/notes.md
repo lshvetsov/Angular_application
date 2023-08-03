@@ -9,6 +9,9 @@
 [5. Routing](#section-11-12-routing)
 [6. Observables](#section-13-14-observable)
 [7. Form Handling](#section-15-16-form-handling)
+[8 Pipes](#section-17-pipes)
+[9 Pipes](#section-18-http-requests)
+
 
 # Sections 1, 2, 4 Basics & Debugging
 
@@ -450,8 +453,8 @@ const appRoutes: Routes = [
 ```
 
 **Dynamic data**: 
-- declare a resolver (service implementing XXX)
-- register resolver to the route declaration: ```XXX```
+- declare a resolver (service implementing ```Resolve<type>```)
+- register resolver to the route declaration: ```{path: ':id', component: RecipeDetailComponent, resolve: [RecipeResolverService]}```
 - resolver will fetch data and put them into the variable with the given name.   
 Using Resolver is pretty similar with using onInit() but with one difference that in case of the Resolver data is uploaded BEFORE the component initialization. 
 
@@ -490,6 +493,8 @@ Two approaches:
 - Reactive (Form is created programmatically and synchronized with DOM)
 
 ## Template-driven approach (TDA)
+
+In nutshell, we pass or bind an object from the DOM to the TS model to process it. 
 
 Main functionality - ```FormsModule``` imported to ```app.module.ts```. Angular recognize form by the tag ```<form>``` (selector). 
 
@@ -533,4 +538,96 @@ input.ng-invalid.ng-touched {
 1) *Combining input values into groups* within the NgModel object(value) by marking html objects (```div```) with ```ngModelGroup="name"```.
 2) *Populating input* from a TS component: ```NgForm.setValue()```(update the whole form) or ```NgForm.form.patchValue()```(update a specific fiend), pass a JSON representing a form structure into these methods. 
 
+## Reactive approach
 
+In a nutshell, we create a form in TS code and bind it to the HTML form. 
+
+1. Create a variable of ```FormGroup```
+2. Populate it with ```FormControl(initial value, validators)```: *forms/reactive/ReactiveFormComponent.signupForm*
+3. Bind the form to the HTML-form (```[formGroup]="signupForm"```) and all inputs to ```FormControls``` (```formControlName="username"```)
+4. Submitting: 
+   - process ```ngSubmit``` event on the HTML form
+   - use internal link to the ```FormGroup``` to get data from the form
+5. Validation: 
+   - Sync validators: 
+     - pass a single build-in validator, custom validator or an array of them (static class ```Validator```) as a second parameter to a ```FormControl```.
+     - custom validator is a method that returns key-value pairs like ```{[s: string]: boolean}```. 
+   - Async validator: 
+     - the same as sync validator, but we need to pass them into the third argument. 
+     - return type ```Promise<any>``` or ```Observable<any>```
+     - add css-class ```ng-pending``` while getting an answer from a server. 
+
+**Getting access to control** in the HTML code through access the TS property: ```signupForm.get('username').invalid```.
+
+**Groping** of controls can be done via nested ```FormGroup``` elements (inside the main ```FormGroup```). 
+
+**FormArray** allows to gather multiple noname controls in the array: 
+- add ```FormArray``` to the ```FormGroup```
+- bind it to the HTML-element by ```formArrayName```
+- bind each HTML-element for the item of the array to its value by ```[formControlName]```
+- implement a mechanism to add a value to the array (e.g. a button)
+Look at *projects/learning/src/app/forms/reactive/reactive-form.component.html:24*
+
+**Subscribe to changes**: ```signupForm.statusChages``` or ```signupForm.valueChanges``` (applicable to particular controls aw well). 
+
+**Set/patch/reset values**: ```signupForm.setValues(json form object)```, ```signupForm.patchValues(changed fields)```
+
+# Section 17 Pipes
+
+Pipes is a way to transform data in a HTML-template. Literally it's just a chain of **built-in** and custom operators: ```{{ server.started | date: 'fullDate' | uppercase }}```. 
+
+- List of **built-in** pipe operators: https://angular.io/api?type=pipe. 
+- Arguments can be passed to the pipe ('fullDate' in the example above), each argument after ```:```
+- Several pipes can be chained but order of them matter (input to the pipe could be of improper type). 
+
+## Custom pipe
+1) Class implementing PipeTransform.
+2) Implement ```transform()```, input is the value to transform and a list of parameters
+3) Add ```@Pipe```, specify parameters of the pipe:
+   - name
+   - pure - whether pipe should be updated when any change in the page is made (can decline performance). 
+4) Register in the ```declaration``` section of ```app.module.ts```
+5) Use it in the HTML code. 
+
+## Async pipe
+Sync pipes badly work with async tasks (Promise, Observable) just showing them as Object. 
+However, if we use ```async``` built-in pipe, it catches events and resolve the Promise | Observable. 
+
+# Section 18 Http requests
+
+1. Add ```HttpClientModule``` to ```app.module.ts```
+2. Use ```HttpClient``` methods to call a remote service (get, post) -> generic method, it needs to specify a return type. 
+3. Subscribe and process the call result.
+
+Usually, it's reasonable to move the ```HttpClient``` logic to a service returning ```Observable```(if the call result is important) or processing the result in the service. 
+
+## Error handling
+
+Several approaches:
+1) add the second argument to ```subscribe()``` of ```Observable``` to process errors where you process the response
+2) distribute information about an error through ```Subject``` when several components are needed to be informed. 
+3) ```catchError``` in a ```pipe()```, it's possible also to re-throw the error with the ```throwError``` operator. 
+
+## Http options
+*Http options* can be set as an argument in ```HttpClient``` method (get, post, etc).  
+**Options**
+1) **Header** (```HttpHeader```), key-value pairs
+2) **Query params** (```HttpParams```), immutable object, so for multiple values we need to use ```append``` and assign the result to a variable. 
+3) **Observe**, what we extract from the response.   
+Default = 'body', but we can also extract 'response' (the whole response, ```HttpResponse```) and 'event' (```HttpEventType```, catching such events as sending, response, download etc). 
+4) **Response type**. Default = 'json', but it's possible to set 'text' (if want to parse it later or we don't need the response to be parsed). 
+
+## Http Interceptors
+
+1) ordinary Angular service implemented ```HttpInterceptor```
+2) should be registered in ```app.module.ts``` as a provider
+    ```typescript
+    {
+        provide: HTTP_INTERCEPTORS,
+        useClass: AuthInterseptorService,
+        multi: true
+    }
+    ```
+3) request can be modified in the interceptor by cloning the original one and passing updates (as it immutable): ```const newRequest = req.clone({headers: req.headers.append('Auth', 'XYZ')})```.
+4) multiple interceptors can be registered and in this case, the order is matter
+5) it's possible to intercept a response, for this purpose we need to apply operators (```pipe```) to the return value (```next.handle(req)```)
