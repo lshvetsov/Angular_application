@@ -1,8 +1,8 @@
-import {Injectable, OnInit} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {Ingredient} from "../ingredient.model";
 import {Recipe} from "../recipe.model";
 import {ShoppingListService} from "./shopping-list.service";
-import {map, Subject, tap} from "rxjs";
+import {map, Subject, take, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 
 @Injectable()
@@ -53,16 +53,13 @@ export class RecipeService {
     )
   }
   fetchRecipes() {
-    return this.httpClient.get<Recipe[]>(this.url)
-      .pipe(
-        map(recipes => {
-          return recipes.map(recipe => {
-            return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []}
-          })}
-        ),
-        tap(
-          recipes => this.setRecipes(recipes)
-        )
-      );
+    return this.httpClient.get<Recipe[]>(this.url).pipe(
+      map(recipes => {
+        return recipes.map(recipe => {
+          return {...recipe, ingredients: recipe.ingredients ? recipe.ingredients : []}
+        })}
+      ),
+      tap(recipes => this.setRecipes(recipes))
+    )
   }
 }

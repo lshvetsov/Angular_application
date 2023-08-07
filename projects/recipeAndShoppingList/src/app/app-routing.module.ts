@@ -6,16 +6,19 @@ import {RecipeDetailComponent} from "./recipes/recipe-detail/recipe-detail.compo
 import {EmptyComponent} from "./shared/empty/empty.component";
 import {RecipeEditComponent} from "./recipes/recipe-edit/recipe-edit.component";
 import {RecipeResolverService} from "./shared/services/recipe-resolver.service";
+import {AuthComponent} from "./auth/auth.component";
+import {AuthGuard} from "./shared/http/auth.guard";
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/recipes', pathMatch: "full"},
-  {path: 'recipes', component: RecipesComponent, children: [
+  {path: 'recipes', component: RecipesComponent, canActivate: [AuthGuard], children: [
       {path: '', component: EmptyComponent, data: {message: "Please select the recipe"}},
       {path: 'new', component: RecipeEditComponent},
       {path: ':id', component: RecipeDetailComponent, resolve: [RecipeResolverService]},
       {path: ':id/edit', component: RecipeEditComponent, resolve: [RecipeResolverService]}
     ]},
-  {path: 'shopping-list', component: ShoppingListComponent}
+  {path: 'shopping-list', component: ShoppingListComponent},
+  {path: 'auth', component: AuthComponent}
 ]
 
 @NgModule({

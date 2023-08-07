@@ -10,7 +10,8 @@
 [6. Observables](#section-13-14-observable)
 [7. Form Handling](#section-15-16-form-handling)
 [8 Pipes](#section-17-pipes)
-[9 Pipes](#section-18-http-requests)
+[9 Pipes](#section-18-19-http-requests)
+[10 Authentication](#section-20-authentication)
 
 
 # Sections 1, 2, 4 Basics & Debugging
@@ -593,7 +594,7 @@ Pipes is a way to transform data in a HTML-template. Literally it's just a chain
 Sync pipes badly work with async tasks (Promise, Observable) just showing them as Object. 
 However, if we use ```async``` built-in pipe, it catches events and resolve the Promise | Observable. 
 
-# Section 18 Http requests
+# Section 18-19 Http requests
 
 1. Add ```HttpClientModule``` to ```app.module.ts```
 2. Use ```HttpClient``` methods to call a remote service (get, post) -> generic method, it needs to specify a return type. 
@@ -631,3 +632,28 @@ Default = 'body', but we can also extract 'response' (the whole response, ```Htt
 3) request can be modified in the interceptor by cloning the original one and passing updates (as it immutable): ```const newRequest = req.clone({headers: req.headers.append('Auth', 'XYZ')})```.
 4) multiple interceptors can be registered and in this case, the order is matter
 5) it's possible to intercept a response, for this purpose we need to apply operators (```pipe```) to the return value (```next.handle(req)```)
+
+# Section 20 Authentication
+
+Implemented as a service which uses ```HttpClient``` to call a backend. 
+Service process response (```pipe```): 
+- handling errors
+- returning ```Observable``` to a component (AuthComponent), which implements a login form,
+- store the authenticated user (User is an introduced **interface** for object to communicate with backend)
+
+Store user data: 
+- Options - local storage | cookie
+- Local storage: 
+  - we need to serialize the object by converting it to string: ```JSON.stringify(user)``` and back when we get it from the storage ```JSON.parse(user string)```.
+  - communication with *local storage** is through ```localStorage``` with ```set(key, string value)``` and ```get(key)```
+- implement **AutoLogin** by getting the user from the local storage once the application is loaded and sending it regularly to other components.
+- implement **AutoLogout** by setting a timer for the ```logout()``` method with time token expiration time and treat this time when we reload the components (page) and do a manual logout. 
+- guard sensitive routes by implementing a [route guard](#guards). 
+
+General notes:
+- ```BehaviorSubject``` works like a subject but with the ability to give access to the current Object state (not when it has been changed). 
+- ```rxjs``` -> pipe operators:
+  - exhaustMap - convert one Observable to another one
+  - map - apply a function
+  - take - limit the number of elements to proceed in the pipe
+  - tap - use a function without input modification

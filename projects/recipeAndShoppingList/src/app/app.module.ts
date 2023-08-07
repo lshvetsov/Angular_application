@@ -16,7 +16,12 @@ import {EmptyComponent} from "./shared/empty/empty.component";
 import {RecipeEditComponent} from "./recipes/recipe-edit/recipe-edit.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {RecipeService} from "./shared/services/recipe.service";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {AuthComponent} from "./auth/auth.component";
+import {AuthService} from "./shared/services/auth.service";
+import {RecipeResolverService} from "./shared/services/recipe-resolver.service";
+import {LoadingSpinnerComponent} from "./shared/loading-spinner/loading-spinner.component";
+import {TokenInterceptorService} from "./shared/http/token-interceptor.service";
 
 @NgModule({
   declarations: [
@@ -30,7 +35,9 @@ import {HttpClientModule} from "@angular/common/http";
     ShoppingListEditComponent,
     DropdownDirective,
     EmptyComponent,
-    RecipeEditComponent
+    RecipeEditComponent,
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
     imports: [
         BrowserModule,
@@ -39,7 +46,11 @@ import {HttpClientModule} from "@angular/common/http";
         ReactiveFormsModule,
         HttpClientModule
     ],
-  providers: [ShoppingListService, RecipeService],
+  providers: [ShoppingListService, RecipeService, AuthService, RecipeResolverService, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptorService,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

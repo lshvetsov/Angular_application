@@ -4,7 +4,7 @@ import {Recipe} from "../recipe.model";
 import {RecipeService} from "./recipe.service";
 import {Observable} from "rxjs";
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class RecipeResolverService implements Resolve<Recipe[]>{
 
   constructor(private recipeService: RecipeService) {
