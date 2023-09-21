@@ -52,4 +52,8 @@ export class AuthComponent {
     this.authForm.reset();
   }
 
+  onErrorHandling() {
+    this.error = null;
+  }
+
 }

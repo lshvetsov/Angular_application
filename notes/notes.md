@@ -657,3 +657,26 @@ General notes:
   - map - apply a function
   - take - limit the number of elements to proceed in the pipe
   - tap - use a function without input modification
+
+# Section 21 Dynamic components
+
+Dynamic components is components which created and added to the DOM under certain conditions. 
+
+Approaches:
+1. ```ngif``` (**preferable**) - introduce the component via *selector*, ```ngif``` add it to the DOM when the condition met. 
+2. *Dynamic Component Loader* - approach when the component created and added to the DOM manually (imperatively) in the code.
+
+**How Dynamic Component Loader works?**
+
+Very rare case, e.g. creation of a library. 
+
+1. Create a place in the DOM to set the component
+    - placeholder ```Directive``` containing a reference to a place in the DOM (```ViewContainerRef```)
+    - put this directive into the template inside ```ng-template```: ```html <ng-template directive selector"><ng-template>```
+    - inside a parent component set this placeholder as a ```ViewChild``` and get a ref to this container in the DOM (```viewContainerRef```)
+2. Create a component manually.
+  Angular manages component creation if the developer specify them in templates (DOM, by selector) | in routes. Otherwise, we need:
+  - create a component factory: ```ComponentFactoryResolver.resolveComponent(component type)```
+  - create a component in a given container ```hostViewContainerRef.createComponent(factory)```
+  - set up a component state: variables, subscriptions. 
+
