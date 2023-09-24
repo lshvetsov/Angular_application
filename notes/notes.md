@@ -680,3 +680,92 @@ Very rare case, e.g. creation of a library.
   - create a component in a given container ```hostViewContainerRef.createComponent(factory)```
   - set up a component state: variables, subscriptions. 
 
+# Section 22 Modules & performance
+
+*Modules* allow you to split you application into pieces to make them leaner and focused.
+Each module is a independent part which doesn't share anything with other components unless it explicitly state.
+Application has to have at least one module (```AppModule```).
+
+*Module structure*
+- ```@NgModule``` to mark it
+- **Structure**
+  - declarations - all internal components
+  - import - all external components (what is exported from them)
+  - export - what can be imported by other modules.
+  - providers - services that provide general methods (can't be declared in one Module to be used in the whole application)
+  - bootstrap - root components (root of components tree), usually 1 but could be more
+  - entryComponents - if manual Dynamic Component Loading is used
+
+**Optimizations**
+1) *Lazy Loading* - load components only when a user visits a particular URL
+    - split routes into several modules
+    - root route in each module should be empty ('')
+    - add the real route to the root routes file using ```loadchildren```: ```path: 'recipes', loadChildren: './xxx/xxx/module#moduleClass'```
+    - alternative syntax - use a function to resolve the name of the module
+2) *PreLoading Modules* - preload modules after initial initialization
+    - advantages from lazy loading & loading at one time: load the initial page quickly but then load all needed modules before their routs are requested
+    - add ```preloadingStrategy: PreloadingAllModules``` into the main route file: ```RouterModule.forRoot(appRoutes,{preloadingStrategy: PreloadingAllModules})```
+3) *Services* can be declared in:
+  - AppModule - service available application-wide, root injector, should be used as the *default setup* (provided: 'root' | declare in ```providers```)
+  - Components - service available inside a component, component injector, should be used only if *service should be a part of the component*
+  - Eager-loaded modules - service available application-wide, root injector, *do not rely on the mechanics as it's just a side effect*
+  - Lazy-loaded modules - service available inside a loaded module, child injector, should be used only if *service should be a part of the module*
+
+# Section 23 Deployment
+
+1) Setup environment variables: 
+   - ```/environment``` directory, two files for development & prod to store variables
+   - switching between files will be conducted by Angular depending on ```--prod``` parameter of the ```ng build``` command
+2) Build the app with ```ng build```: TS code -> JS code
+   - ```/dist/pojectName``` is the bundle for a browser (HTML, CSS, JS)
+3) Deploy the app to a **static web-site hosting** (AWS, Firebase)
+
+# Section 24 Standalone components (Angular 14-15)
+
+**Standalone component** is a component created out of any module. 
+1) ```  standalone: true``` in the ```@Component``` or any other declaration. 
+2) Standalone component should be imported into the NgModule (```imports``` section of ```@NgModule```) and all necessary components of the particular NgModule should be imported into the standalone component (```imports``` section of ```@Component```)
+3) If all components in the app are standalone, there is no necessity in the module (```app.module.ts```) but we need to bootstrap our app not from the module but from the root component(```main.ts```):
+    ```js
+      // old
+      platformBrowserDynamic().bootstrapModule(AppModule).catch(err => console.error(err));
+      // new
+      bootstrapApplication(AppComponent);     
+    ```
+4) *Services* to use in standalone modules should be declared ```@Injectable({ providedIn: 'root' })``` or declared as a second parameter in the bootstrap function (```bootstrapApplication(AppComponent);```)
+   If it's expected to have a separate instance of a service for a component, services can be declared in ```providers``` section of the component declaration. 
+5) Routes: we need to add a RouterModule to imports of a standalone component and for root we also need to add the router module to ```providers``` section of the bootstrapping function passing it in the intermediate function ```importProvidersFrom```:
+    ```js
+       bootstrapApplication(AppComponent, providers: [importProvidersFrom(AppRoutingModule)])
+    ```
+6) Lazy loading: in a routing module, instead of binding ```path``` and ```component``` we can use binding ```path``` and ```loadComponent``` and declare a function to load a component lazily: ```()=>import('path').then((mod)=>mod.ComponentName)```
+
+# Section 25 Angular Signals (Angular 16)
+
+Feature for detecting changes in UI and reacting on them. Benefits: smaller bundle & better performance. 
+
+*Classic(Zoned-based) approach*: Angular detect changes and update the whole UI automatically (according to specified methods)
+*Signals*: developer should told Angular when data has been changed & Angular update only part of the UI.
+
+*How does it work?*
+1. Variables is assigned with the generic ```signal()``` function instead of a particular value. 
+2. In template variable should be referenced through a funcion call instead of a string interpolation: ```{{variable() }}```
+3. Signal can be modified by functions:
+   - ```set(value)``` - set a value to a signal, arbitrary or based on the existing value
+   - ```update(function)``` - update (create a new one) the signal variable based on the provided function
+   - ```mutate(function)``` - mutate (change the internal state) the signal variable based on the provided function
+4. Extra features:
+  - ```computed(function)``` - can calculate another variable based on the signal
+  - ```effect(function)``` - can perform extra logic when the signal is caught
+
+# Section 26 Angular Universal
+
+Feature to allow the first page to be rendered on the server side and returned to the browser ready-to-show. 
+Benefits:
+- SEO (search engine optimizations) works (because the first page contains the content not just js code)
+- performance optimization (for all networks, we don't need to wait until the js code will be downloaded and executed)
+
+Command: ```ng add @nguniversal/express-engine``` -> result:
+- extra packages installed
+- server configuration (```server.ts```)
+- changes to ```package.json``` (```server:ssr```, ```build:ssr```, ```prerender``` commands)

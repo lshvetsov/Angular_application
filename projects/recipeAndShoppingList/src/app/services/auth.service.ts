@@ -1,13 +1,14 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, tap, throwError} from "rxjs";
-import {User} from "../user.model";
+import {User} from "../shared/user.model";
 import {Router} from "@angular/router";
+import {environment} from "../../environments/environment";
 
 @Injectable()
 export class AuthService {
 
-  apiKey = '' // TODO Update this token from the firebase project settings (Web API Key) when restart the project
+  apiKey = environment.firebaseAPI;
   localStorageItemName = 'userData';
 
   signUpURL = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+this.apiKey;

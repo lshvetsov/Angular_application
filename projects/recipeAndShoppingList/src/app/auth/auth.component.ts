@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {NgForm} from "@angular/forms";
-import {AuthResponse, AuthService} from "../shared/services/auth.service";
+import {AuthResponse, AuthService} from "../services/auth.service";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
 

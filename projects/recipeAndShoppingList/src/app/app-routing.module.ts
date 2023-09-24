@@ -5,7 +5,7 @@ import {ShoppingListComponent} from "./shoppingList/shoppingList.component";
 import {RecipeDetailComponent} from "./recipes/recipe-detail/recipe-detail.component";
 import {EmptyComponent} from "./shared/empty/empty.component";
 import {RecipeEditComponent} from "./recipes/recipe-edit/recipe-edit.component";
-import {RecipeResolverService} from "./shared/services/recipe-resolver.service";
+import {RecipeResolverService} from "./services/recipe-resolver.service";
 import {AuthComponent} from "./auth/auth.component";
 import {AuthGuard} from "./shared/http/auth.guard";
 
