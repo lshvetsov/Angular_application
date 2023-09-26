@@ -765,7 +765,81 @@ Benefits:
 - SEO (search engine optimizations) works (because the first page contains the content not just js code)
 - performance optimization (for all networks, we don't need to wait until the js code will be downloaded and executed)
 
-Command: ```ng add @nguniversal/express-engine``` -> result:
+**Command**: ```ng add @nguniversal/express-engine``` -> result:
 - extra packages installed
 - server configuration (```server.ts```)
 - changes to ```package.json``` (```server:ssr```, ```build:ssr```, ```prerender``` commands)
+
+**Features** 
+- different routes for the first (pre-rendered) page
+- fullstack app: it's possible to define and implement REST API backend in the same folder as the client app (Node.js server)
+
+**Deployment**
+We need Node.js server instaed of static web-site hosting provider
+1) Build the project - ```build:ssr```
+2) Upload the result to the server - ```dist/projectName``` + ```angular.json``` + ```package.json```
+3) Install all dependencies: ```npm install```
+4) Run the app: ```npm run serve:ssr```
+
+# Section 27 Animations
+
+Feature allowing you to change a css style of elements dynamically with some animation effects. 
+
+**Setup**
+1) Add ```animation``` block to ```@Component``` declaration:
+    - trigger: name + definition -> when we need to apply declared animation
+    - trigger definition: name + list of states & transition describing css-style of an element in the state & how it should move between states 
+    ```json
+        animations: [trigger('divState', [
+          state('normal', style({
+             'background-color': 'green',
+             transform: 'translateX(0)'
+           })),
+         state('high', style({
+             'background-color': 'yellow',
+             transform: 'translateX(200px)'
+          })),
+          transition("normal => high", animate(300)),
+          transition("high => normal", animate(900))
+      ])]
+    ```
+2) Add a reference to the trigger to the html code of the element: ```[@triggerName]="stateVariableName"``` (or without assigning if we use void/*)
+   - it's possible to have more control by defining callbacks methods which will be called in the beginning and after an animation: ```[@triggerName.start]=method($event)```
+3) Add a variable with the name of the state which value will be matching with state names defined in the ```animation``` section. 
+4) Transitions:
+   - we can use the predefined states ```*``` and ```void``` to describe transition from/to any state or when the item appear or disappear
+   - describing a transition we can set some arguments (array): initial style (```style```) and a consequence of transformations (```animate```)
+   - we can group ```animation``` to execute them simultaneously 
+5) Describing animations (```animate```) we can set the time and other parameters:
+   - ```style``` if we want to apply a particular style during the animation
+   - ```keyframe``` (which requires an array of styles with additional argument ```offset```) to control how style is changing during the period of animation. 
+
+# Section 28 Service workers
+
+This feature allows to execute JS in a separate thread (worker). So it's possible to add extra data processing (caching). 
+
+1) you need to install additional library ```ng install @angular/pwa```
+2) it makes changes to the project files:
+  - add workers declaration to ```app.module.ts```
+  - add ```manifest.json```
+  - ```package.json``` (new packages), ```angular.json``` (for changing angular commands)
+  - add ```ngsw-config.json``` (service worker configuration)
+
+To use service workers we need to deploy our application on the server (run locally | remote). 
+
+**SW configuration** (``ngsw-config.json```)
+- main page
+- *AssetsGroups* - group of *static* assets that should be cached
+  - install mode (prefetch | lazy) - when we need to cache them (in the beginning | when they are required)
+  - update mode (prefetch | lazy) - when we need to cache them when the app is updated (in the beginning | when they are required)
+  - files | url - arrays of links to assets
+- *DataGroup** - group of *dynamic* assets that should be cached
+  - name
+  - urls
+  - cacheConfig
+    - strategy: 
+      - freshness (always got to the server and only if it's unavailable take from cache)
+      - performance (go to chache and only if it's stale, call the server)
+    - maxSize 
+    - maxAge (performance mode) - to understand whether the cache is stale
+    - timeout (freshness mode) - to understand whether the server is offline
