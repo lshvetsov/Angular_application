@@ -843,3 +843,112 @@ To use service workers we need to deploy our application on the server (run loca
     - maxSize 
     - maxAge (performance mode) - to understand whether the cache is stale
     - timeout (freshness mode) - to understand whether the server is offline
+
+# Section 29 Unit testing
+
+More information: https://testing-angular.com/introduction/#introduction 
+
+**Defaults**
+- *Jasmine* as testing framework (alternative - *Jest*)
+- *Karma* as test runner (alternative - *Jest*)
+- Implementation and test code is bundled with *Webpack*. 
+- Application parts are typically tested inside Angular’s *TestBed* (*Spectator*, *Angular testing library*)
+
+Running tests: ```ng test```
+
+1) located in ```xxx.component.spec.ts```
+2) structure
+   - setup: what should be set before each test run, if we don't use ```webpack```, we need to compile the code before each run.
+       ```js
+         describe('App: CompleteGuideFinalWebpack', () => {
+          beforeEach(() => {
+            TestBed.configureTestingModule({
+              declarations: [AppComponent],
+          });
+        });
+       ```
+   - test: name + test function
+     ```js
+        it('should create the app', () => {
+          let fixture = TestBed.createComponent(AppComponent);
+          let app = fixture.debugElement.componentInstance; // get access to component
+          expect(app).toBeTruthy();  // expect + condition 
+        });
+     ```
+3) access to elements: 
+   - component: ```fixture.debugElement.componentInstance```
+   - template: ```fixture.debugElement.nativeElement```
+4) after any change to the initial state of component we need to call: ```fixture.detectChanges()```
+    ```js
+     let app = fixture.debugElement.componentInstance;
+     app.isLoggedIn = true;
+     fixture.detectChanges();
+   ```
+5) mocking (service): ```let spy = spyOn(dataService, 'getDetails').and.returnValue(Promise.resolve('Data'));``` + detect changes 
+6) inject service: ```let dataService = fixture.debugElement.injector.get(DataService)``` + detect changes
+7) test async methods
+  - real async: wrap the test function with ```async()``` + process async calls: 
+      ```js
+         fixture.whenStable().then(() => {expect(app.data).toBe('Data');});
+      ```
+  - fake async: wrap the test function with ```fakeAsync()``` and call ```tick()``` to end all async calls. 
+
+# Section 30 Angular CLI
+
+Source: https://angular.io/cli. 
+
+## Commands
+1) ```ng new``` creates a new project (```-- help``` to get all available options)
+2) ```ng serve``` builds and serves your application, rebuilding on file changes.
+3) ```ng generate``` generates and/or modifies files based on a schematic (build-in - component, class, directive, environment, module, service, etc)
+4) ```ng lint``` check the code based on ```tslint.json```
+5) ```ng build``` compiles an Angular application or library into an output directory named dist/ at the given output path. 
+6) ```ng add``` adds some functionality (install dependencies and adjust the project to use this functionality), can be configured by *schematics*
+7) ```ng update``` allows you to update packages and do migration related to the package updates. 
+8) ```ng deploy``` allows to deploy the app (we can choose different options(firebase, AWS, Azure,  etc) and make preparations by add funcionality (``ng add``))
+
+## Configs
+1) ```.editorconfig``` - styling the code
+2) ```browserlist``` - list of browsers to support (restrictive rules)
+3) ```karma.config.js``` - testing configuration (if ```karma``` library is used)
+4) ```package.json``` - scripts, dependencies & dev dependencies, used when we run ```ng install```(```node_modules```)
+5) ```tsconfig.json``` - configuration of typescript & angular compilers (sub-files for application & test environments)
+6) ```tslint.json``` - linting configuration for typescript
+
+## Angular.json
+
+Configuration file for your Angular project
+
+1) ```projectRoot``` where to create a new project
+2) ```projects``` list of projects with their configuration:
+  - project type - application  | library
+  - **schematics** - tool to create a blueprint of how some commands should work (```ng generate```, ```ng add```, ```ng update```)
+  - root path
+  - root source
+  - architect/build - build configuration:
+    - builder, 
+    - build options - assets, extra js scripts, styles, etc.
+    - build profiles(configurations) - prod, test, etc
+  - architect/serve
+  - architect/test - test configuration
+
+## Differential loading 
+
+This is the ability to create several versions of your application for different browsers. 
+Mostly, this versions is vary in polyfills, which is js code that implements features that aren't supported in a particular browser (mostly in old ones). 
+Polyfills are managed in ```polyfills.ts``` (``src/``), some of them are set by default, some should be set manually. 
+
+# Section 31 Other features
+
+1) **Angular elements** allows you to transform Angular components into native Web components, which could solve the problem of dynamic html content. 
+    The problem is that if you are going to get an HTML content from the server and it includes Angular selectors, Angular doesn't recognize it as Anmgular create all components at compile time. 
+    To solve this problem you need:
+    - install ```@angular/elements``` (``npm install``)
+    - do all related settings (may vary depending on the Angular version)
+    - declare and define ```CusomElement``` in the Angular code (Component)
+    - add this component to ```entryComponents``` of ```ngModule``` to compile it even without using at compile time
+    - after that you can use it in dynamic HTML content 
+
+# Useful links & Miscellaneous notes
+
+1) **Angular Material** is a set of components designed by Google and freely available for projects [(link)](https://material.angular.io/). 

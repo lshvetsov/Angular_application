@@ -6,7 +6,7 @@
     "AngularLearning": {
       "projectType": "application",
       "schematics": {},
-      "root": "",
+      "root": "" ,
       "sourceRoot": "projects/learning/src",
       "prefix": "app",
       "architect": {
