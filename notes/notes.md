@@ -949,6 +949,38 @@ Polyfills are managed in ```polyfills.ts``` (``src/``), some of them are set by 
     - add this component to ```entryComponents``` of ```ngModule``` to compile it even without using at compile time
     - after that you can use it in dynamic HTML content 
 
+# Section 32 NgRx
+
+**NgRx** is a *state management library*. 
+State is a data using in your system. Using of NxRx is optional as we can store the same data in system elements: components, services. 
+
+**Glossary**
+1) *Store* is a place to store the state
+2) Component read data from the *Store* via a subscription on changes using *Selector* to define data it needs. 
+3) Component can update data in the *Store* by performing (emitting) *Actions* which are caught by *Reducers*. 
+4) *Reducers* contains logic to update the data. 
+5) *Effects* is additional actions which is not connected to state | UI changing but support *Action* processing. 
+
+## Setting up
+
+1. Create a list of **actions**
+   Action = name + extra information (props). 
+   Actions is created by ```createAction()```, the alternative is creating a class implementing ```Action``` and passing properties as a constructor argument. 
+2. Create a list of **reducers**
+   We create a reducer by calling ```createReducer()``` passing initial state and functions for each event that is processed by this reducer: ```on(event, function)```.
+   Alternative approach is to declare a function where we perform an action based on the type of input events, limited by event class: ```function counterReducer (state = initialState, action: EventType | Action)```
+3. Create a list of **selectors**
+   Functions defining how to request data from the store. 
+4. **Update the state**
+   We need to send events (```dispatch(event({props})```)
+5. **Read the state**
+   We can select the value from the store (```store.select(selector | key)```) and then process returned ```Observable```. 
+6. Add **effects**
+   To use effects we need to install: ```ng add @ngrx/effects```. 
+   We need to create a separate file with a class that takes ```Actions``` in the constructor and declare some effects with the ```createEffect()``` function. 
+   This function just catch an events of a particular type and process them with a pipeline of functions: ```this.actions.pipe(ofType(type1, type2), <further processing>)```.
+   The second argument is a configuration in which we need to clarify at least ```dispatch``` to false if the effect doesn't perform a new action. 
+
 # Useful links & Miscellaneous notes
 
 1) **Angular Material** is a set of components designed by Google and freely available for projects [(link)](https://material.angular.io/). 
